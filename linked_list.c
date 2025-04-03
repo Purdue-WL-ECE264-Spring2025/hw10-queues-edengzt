@@ -31,17 +31,47 @@ size_t remove_from_head(struct linked_list *list) {
     return 0;
   }
 
-  struct list_node *deleteHead = list -> head;
+  struct list_node * deleteHead = list -> head;
   list -> head = list -> head -> next; // go to the element after the head
-  size_t value = deleteHead -> value;
+  size_t retval = deleteHead -> value;
   free(deleteHead); // free memory of the head node to be deleted
 
-  return value;
+  return retval;
 }
 
-size_t remove_from_tail(struct linked_list *list) { return 0; }
+size_t remove_from_tail(struct linked_list *list) { 
+  if(list -> head == NULL) {
+    return 0;
+  }
+  
+  struct list_node * cursor = list -> head;
+  
+  while (cursor -> next -> next != NULL) {
+    cursor = cursor -> next;
+  }
 
-void free_list(struct linked_list list) {}
+  cursor -> next = NULL; // set the last node to point to NULL
+  size_t retval = cursor -> next -> value;
+  free(cursor -> next -> next); // free memory of the tail node
+
+  return retval;
+}
+
+void free_list(struct linked_list list) {
+  struct list_node * cursor = list.head;
+  struct list_node * nextNode = NULL;
+
+  while (cursor != NULL) {
+    nextNode = cursor -> next;
+    free(cursor);
+    cursor = nextNode;
+  }
+
+  list.head = NULL;
+
+  free(cursor);
+  free(list.head);
+}
 
 // Utility function to help you debugging, do not modify
 void dump_list(FILE *fp, struct linked_list list) {
