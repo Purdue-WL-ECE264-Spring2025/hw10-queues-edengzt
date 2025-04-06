@@ -29,19 +29,19 @@ int is_solved(struct game_state state) {
     return 1;
 }
 
-int is_visited(struct queue q, struct game_state state) {
-    struct list_node *cursor = (q.data).head;
+int is_visited(struct game_state state, struct linked_list visited) {
+    struct list_node *cursor = visited.head;
     size_t num_steps = state.num_steps;
-    size_t visited = serialize(state) - num_steps;
+    size_t check_val = serialize(state) - num_steps;
     size_t cursor_val;
-    struct game_state cursor_state;
+    // struct game_state cursor_state;
 
     while (cursor != NULL) {
         cursor_val = (cursor -> value);
-        cursor_state = deserialize(cursor_val);
-        cursor_val -= cursor_state.num_steps;
+        // cursor_state = deserialize(cursor_val);
+        // cursor_val -= cursor_state.num_steps;
         
-        if (cursor_val == visited) {
+        if (cursor_val == check_val) {
             return 1; // state is in the queue
         }
         cursor = cursor->next;
@@ -51,6 +51,7 @@ int is_visited(struct queue q, struct game_state state) {
 }
 
 int number_of_moves(struct game_state start) {
+    struct linked_list visited;
     struct queue q;
     q.data.head = NULL;
     enqueue(&q, start);
@@ -65,10 +66,10 @@ int number_of_moves(struct game_state start) {
         // dequeue the next state
         current = dequeue(&q);
 
-        if (is_visited(q, current)) {
-            num_next_states = 0; // Reset for the next iteration
-            continue; // Skip if already visited
-        }
+        // if (is_visited(current, visited)) {
+        //     num_next_states = 0; // Reset for the next iteration
+        //     continue; // Skip if already visited
+        // }
 
         if (is_solved(current)) {
             return current.num_steps; // Return the number of moves to solve
@@ -78,29 +79,33 @@ int number_of_moves(struct game_state start) {
             next_states[num_next_states++] = current;
             move_up(&next_states[num_next_states - 1]);
             enqueue(&q, next_states[num_next_states - 1]);
+            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
         }
         if (current.empty_row > 0) {
             next_states[num_next_states++] = current;
             move_down(&next_states[num_next_states - 1]);
             enqueue(&q, next_states[num_next_states - 1]);
+            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
         }
         if (current.empty_col < 3) {
             next_states[num_next_states++] = current;
             move_left(&next_states[num_next_states - 1]);
             enqueue(&q, next_states[num_next_states - 1]);
+            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
         }
         if (current.empty_col > 0) {
             next_states[num_next_states++] = current;
             move_right(&next_states[num_next_states - 1]);
             enqueue(&q, next_states[num_next_states - 1]);
+            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
         }
 
-        // // Enqueue new states if they haven't been visited
-        // for (int i = 0; i < num_next_states; i++) {
-        //     if (!is_visited(q, next_states[i])) {
-        //         enqueue(&q, next_states[i]);
-        //     }
-        // }
+        // Enqueue new states if they haven't been visited
+        for (int i = 0; i < num_next_states; i++) {
+            if (!is_visited(next_states[i], visited)) {
+                enqueue(&q, next_states[i]);
+            }
+        }
 
         num_next_states = 0; // Reset for the next iteration
     }
