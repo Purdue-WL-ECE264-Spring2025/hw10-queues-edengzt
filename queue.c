@@ -52,14 +52,16 @@ int number_of_moves(struct game_state start) {
     struct queue q;
     q.data.head = NULL;
     enqueue(&q, start);
+    struct game_state current;
 
     while (!is_empty(&q)) {
-        // if (is_visited(q, start)) {
-        //     continue; // Skip if already visited
-        // }
 
-        // Dequeue the next state
-        struct game_state current = dequeue(&q);
+        // dequeue the next state
+        current = dequeue(&q);
+
+        if (is_visited(q, current)) {
+            continue; // Skip if already visited
+        }
 
         if (is_solved(current)) {
             return current.num_steps; // Return the number of moves to solve
@@ -72,31 +74,31 @@ int number_of_moves(struct game_state start) {
         if (current.empty_row < 3) {
             next_states[num_next_states++] = current;
             move_up(&next_states[num_next_states - 1]);
-            // enqueue(&q, next_states[num_next_states - 1]);
+            enqueue(&q, next_states[num_next_states - 1]);
         }
         if (current.empty_row > 0) {
             next_states[num_next_states++] = current;
             move_down(&next_states[num_next_states - 1]);
-            // enqueue(&q, next_states[num_next_states - 1]);
+            enqueue(&q, next_states[num_next_states - 1]);
         }
         if (current.empty_col < 3) {
             next_states[num_next_states++] = current;
             move_left(&next_states[num_next_states - 1]);
-            // enqueue(&q, next_states[num_next_states - 1]);
+            enqueue(&q, next_states[num_next_states - 1]);
         }
         if (current.empty_col > 0) {
             next_states[num_next_states++] = current;
             move_right(&next_states[num_next_states - 1]);
-            // enqueue(&q, next_states[num_next_states - 1]);
+            enqueue(&q, next_states[num_next_states - 1]);
         }
 
-        // Enqueue new states if they haven't been visited
-        for (int i = 0; i < num_next_states; i++) {
-            if (!is_visited(q, next_states[i])) {
-                enqueue(&q, next_states[i]);
-            }
-        }
+        // // Enqueue new states if they haven't been visited
+        // for (int i = 0; i < num_next_states; i++) {
+        //     if (!is_visited(q, next_states[i])) {
+        //         enqueue(&q, next_states[i]);
+        //     }
+        // }
     }
   
-    return 0; // Return -1 if no solution is found
+    return current.num_steps; // Return -1 if no solution is found
 }
