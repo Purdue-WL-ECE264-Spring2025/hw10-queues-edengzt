@@ -50,6 +50,8 @@ int is_visited(struct game_state state, struct linked_list visited) {
     return 0;
 }
 
+
+
 int number_of_moves(struct game_state start) {
     struct linked_list visited;
     struct queue q;

@@ -31,6 +31,5 @@ test: $(APP)
 	./hw10 testcases/4.txt
 	./hw10 testcases/5.txt
 
-
 %.o: %.c $(HEADERS)
 	$(CC) -c $< -o $@ $(CFLAGS)

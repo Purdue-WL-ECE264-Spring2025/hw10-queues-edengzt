@@ -43,7 +43,8 @@ size_t remove_from_head(struct linked_list *list) {
   list -> head = list -> head -> next; // go to the element after the head
   size_t retval = deleteHead -> value;
   free(deleteHead); // free memory of the head node to be deleted
-
+  deleteHead = NULL;
+  
   return retval;
 }
 
