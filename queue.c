@@ -33,7 +33,7 @@ int is_visited(struct game_state state, struct linked_list visited) {
     struct list_node *cursor = visited.head;
     size_t num_steps = state.num_steps;
     size_t check_val = serialize(state) - num_steps;
-    size_t cursor_val;
+    size_t cursor_val = 0;
     // struct game_state cursor_state;
 
     while (cursor != NULL) {
@@ -51,10 +51,9 @@ int is_visited(struct game_state state, struct linked_list visited) {
 }
 
 
-
 int number_of_moves(struct game_state start) {
-    struct linked_list visited;
-    struct queue q;
+    struct linked_list visited = {NULL};
+    struct queue q = {NULL};
     q.data.head = NULL;
     enqueue(&q, start);
     struct game_state current;
@@ -74,7 +73,10 @@ int number_of_moves(struct game_state start) {
         }
 
         if (is_solved(current)) {
-            return current.num_steps; // Return the number of moves to solve
+            int num_steps = current.num_steps;
+            free_list(visited);
+            free_list(q.data);
+            return num_steps; // Return the number of moves to solve
         }
 
         if (current.empty_row < 3) {
@@ -131,6 +133,9 @@ int number_of_moves(struct game_state start) {
 
         // num_next_states = 0; // Reset for the next iteration
     }
+
+    free_list(visited);
+    free_list(q.data);
   
     return current.num_steps; // Return -1 if no solution is found
 }
