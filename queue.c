@@ -33,10 +33,12 @@ int is_visited(struct queue q, struct game_state state) {
     struct list_node *cursor = (q.data).head;
     size_t num_steps = state.num_steps;
     size_t visited = serialize(state) - num_steps;
+    size_t cursor_val;
+    struct game_state cursor_state;
 
     while (cursor != NULL) {
-        size_t cursor_val = (cursor -> value);
-        struct game_state cursor_state = deserialize(cursor_val);
+        cursor_val = (cursor -> value);
+        cursor_state = deserialize(cursor_val);
         cursor_val -= cursor_state.num_steps;
         
         if (cursor_val == visited) {
@@ -54,22 +56,23 @@ int number_of_moves(struct game_state start) {
     enqueue(&q, start);
     struct game_state current;
 
+     // Generate possible moves
+     struct game_state next_states[4];
+     int num_next_states = 0;
+
     while (!is_empty(&q)) {
 
         // dequeue the next state
         current = dequeue(&q);
 
         if (is_visited(q, current)) {
+            num_next_states = 0; // Reset for the next iteration
             continue; // Skip if already visited
         }
 
         if (is_solved(current)) {
             return current.num_steps; // Return the number of moves to solve
         }
-
-        // Generate possible moves
-        struct game_state next_states[4];
-        int num_next_states = 0;
 
         if (current.empty_row < 3) {
             next_states[num_next_states++] = current;
@@ -98,6 +101,8 @@ int number_of_moves(struct game_state start) {
         //         enqueue(&q, next_states[i]);
         //     }
         // }
+
+        num_next_states = 0; // Reset for the next iteration
     }
   
     return current.num_steps; // Return -1 if no solution is found
