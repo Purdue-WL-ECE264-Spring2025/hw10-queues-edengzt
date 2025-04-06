@@ -18,7 +18,7 @@ int is_empty(struct queue *q) {
 }
 
 int is_solved(struct game_state state) {    
-    int solved[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    int solved[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
 
     for (int i = 0; i < 16; i++) {
         if (state.tiles[i / 4][i % 4] != solved[i]) {
@@ -31,10 +31,12 @@ int is_solved(struct game_state state) {
 
 int is_visited(struct queue q, struct game_state state) {
     struct list_node *cursor = (q.data).head;
-    size_t visited = serialize(state);
+    size_t num_steps = state.num_steps;
+    size_t visited = serialize(state) - num_steps;
 
     while (cursor != NULL) {
-        if (cursor->value == visited) {
+        size_t cursor_val = (cursor -> value) - num_steps;
+        if (cursor_val == visited) {
             return 1; // state is in the queue
         }
         cursor = cursor->next;
