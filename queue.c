@@ -58,56 +58,76 @@ int number_of_moves(struct game_state start) {
     struct game_state current;
 
      // Generate possible moves
-     struct game_state next_states[4];
-     int num_next_states = 0;
+    //  struct game_state next_states[4];
+    //  int num_next_states = 0;
 
     while (!is_empty(&q)) {
 
         // dequeue the next state
         current = dequeue(&q);
 
-        // if (is_visited(current, visited)) {
-        //     num_next_states = 0; // Reset for the next iteration
-        //     continue; // Skip if already visited
-        // }
+        if (is_visited(current, visited)) {
+            // num_next_states = 0; // Reset for the next iteration
+            continue; // Skip if already visited
+        }
 
         if (is_solved(current)) {
             return current.num_steps; // Return the number of moves to solve
         }
 
         if (current.empty_row < 3) {
-            next_states[num_next_states++] = current;
-            move_up(&next_states[num_next_states - 1]);
-            enqueue(&q, next_states[num_next_states - 1]);
-            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            // next_states[num_next_states++] = current;
+            // move_up(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
+            // insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            move_up(&current);
+            enqueue(&q, current);
+            move_down(&current);
+            current.num_steps-=2;
+            insert_at_head(&visited, serialize(current) - current.num_steps);
         }
         if (current.empty_row > 0) {
-            next_states[num_next_states++] = current;
-            move_down(&next_states[num_next_states - 1]);
-            enqueue(&q, next_states[num_next_states - 1]);
-            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            // next_states[num_next_states++] = current;
+            // move_down(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
+            // insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            move_down(&current);
+            enqueue(&q, current);
+            move_up(&current);
+            current.num_steps-=2;
+            insert_at_head(&visited, serialize(current) - current.num_steps);
         }
         if (current.empty_col < 3) {
-            next_states[num_next_states++] = current;
-            move_left(&next_states[num_next_states - 1]);
-            enqueue(&q, next_states[num_next_states - 1]);
-            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            // next_states[num_next_states++] = current;
+            // move_left(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
+            // insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            move_left(&current);
+            enqueue(&q, current);
+            move_right(&current);
+            current.num_steps-=2;
+            insert_at_head(&visited, serialize(current) - current.num_steps);
         }
         if (current.empty_col > 0) {
-            next_states[num_next_states++] = current;
-            move_right(&next_states[num_next_states - 1]);
-            enqueue(&q, next_states[num_next_states - 1]);
-            insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            // next_states[num_next_states++] = current;
+            // move_right(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
+            // insert_at_head(&visited, serialize(next_states[num_next_states - 1]) - current.num_steps - 1);
+            move_right(&current);
+            enqueue(&q, current);
+            move_left(&current);
+            current.num_steps-=2;
+            insert_at_head(&visited, serialize(current) - current.num_steps);
         }
 
-        // Enqueue new states if they haven't been visited
-        for (int i = 0; i < num_next_states; i++) {
-            if (!is_visited(next_states[i], visited)) {
-                enqueue(&q, next_states[i]);
-            }
-        }
+        // // Enqueue new states if they haven't been visited
+        // for (int i = 0; i < num_next_states; i++) {
+        //     if (!is_visited(next_states[i], visited)) {
+        //         enqueue(&q, next_states[i]);
+        //     }
+        // }
 
-        num_next_states = 0; // Reset for the next iteration
+        // num_next_states = 0; // Reset for the next iteration
     }
   
     return current.num_steps; // Return -1 if no solution is found
