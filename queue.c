@@ -35,7 +35,10 @@ int is_visited(struct queue q, struct game_state state) {
     size_t visited = serialize(state) - num_steps;
 
     while (cursor != NULL) {
-        size_t cursor_val = (cursor -> value) - num_steps;
+        size_t cursor_val = (cursor -> value);
+        struct game_state cursor_state = deserialize(cursor_val);
+        cursor_val -= cursor_state.num_steps;
+        
         if (cursor_val == visited) {
             return 1; // state is in the queue
         }
@@ -51,6 +54,11 @@ int number_of_moves(struct game_state start) {
     enqueue(&q, start);
 
     while (!is_empty(&q)) {
+        // if (is_visited(q, start)) {
+        //     continue; // Skip if already visited
+        // }
+
+        // Dequeue the next state
         struct game_state current = dequeue(&q);
 
         if (is_solved(current)) {
@@ -61,21 +69,25 @@ int number_of_moves(struct game_state start) {
         struct game_state next_states[4];
         int num_next_states = 0;
 
-        if (current.empty_row > 0) {
-            next_states[num_next_states++] = current;
-            move_up(&next_states[num_next_states - 1]);
-        }
         if (current.empty_row < 3) {
             next_states[num_next_states++] = current;
-            move_down(&next_states[num_next_states - 1]);
+            move_up(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
         }
-        if (current.empty_col > 0) {
+        if (current.empty_row > 0) {
             next_states[num_next_states++] = current;
-            move_left(&next_states[num_next_states - 1]);
+            move_down(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
         }
         if (current.empty_col < 3) {
             next_states[num_next_states++] = current;
+            move_left(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
+        }
+        if (current.empty_col > 0) {
+            next_states[num_next_states++] = current;
             move_right(&next_states[num_next_states - 1]);
+            // enqueue(&q, next_states[num_next_states - 1]);
         }
 
         // Enqueue new states if they haven't been visited
